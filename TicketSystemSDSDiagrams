@@ -156,3 +156,4 @@ if __name__ == "__main__":
     render_diagram("swa_diagram.puml")
 
     print("All diagrams successfully generated. Run with PlantUML for visualization.")
+    
