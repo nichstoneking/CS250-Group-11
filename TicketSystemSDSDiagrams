@@ -1,1 +1,158 @@
+"""
+This script generates UML Class and Software Architecture diagrams using PlantUML.
+It should be executed with PlantUML installed, or use an online PlantUML server.
+"""
 
+import os
+from plantuml import PlantUML
+
+# PlantUML server for rendering
+PLANTUML_SERVER = "http://www.plantuml.com/plantuml/img/"
+
+# Function to create the UML Class Diagram file
+def generate_uml_diagram():
+    """
+    Writes the UML Class Diagram for a theater ticketing system to a .puml file.
+    Defines key classes such as User, Admin, Movie, Showtime, Ticket, and Payment.
+    """
+    uml_code = """
+    @startuml
+    class User {
+        + userId: int
+        + name: string
+        + email: string
+        + password: string
+        + purchaseTicket(ticket: Ticket): boolean
+        + viewShowtimes(): void
+    }
+
+    class Admin {
+        + adminId: int
+        + manageMovies(): void
+        + manageTickets(): void
+        + manageUsers(): void
+    }
+
+    class Theater {
+        + theaterId: int
+        + name: string
+        + location: string
+        + listMovies(): List<Movie>
+    }
+
+    class Movie {
+        + movieId: int
+        + title: string
+        + genre: string
+        + duration: int
+        + getShowtimes(): List<Showtime>
+    }
+
+    class Showtime {
+        + showtimeId: int
+        + dateTime: datetime
+        + availableSeats: int
+        + getAvailableSeats(): int
+    }
+
+    class Ticket {
+        + ticketId: int
+        + price: float
+        + status: string
+        + assignToUser(user: User): void
+    }
+
+    class Payment {
+        + paymentId: int
+        + amount: float
+        + processPayment(user: User): boolean
+    }
+
+    class Review {
+        + reviewId: int
+        + rating: int
+        + comment: string
+    }
+
+    User --> Ticket : purchases
+    Admin --> Movie : manages
+    Theater --> Movie : shows
+    Movie --> Showtime : has
+    Showtime --> Ticket : sells
+    User --> Review : writes
+    Ticket --> Payment : requires
+    @enduml
+    """
+    with open("uml_diagram.puml", "w") as file:
+        file.write(uml_code)
+    print("UML Diagram file created: uml_diagram.puml")
+
+# Function to create the Software Architecture (SWA) Diagram file
+def generate_swa_diagram():
+    """
+    Writes the Software Architecture Diagram for the theater ticketing system to a .puml file.
+    Defines Frontend, Backend services, and Database components.
+    """
+    swa_code = """
+    @startuml
+    package "San Diego Theater Ticketing System" {
+        
+        package Frontend {
+            component "Web Interface" as Web
+        }
+
+        package Backend {
+            component "User Management" as UserService
+            component "Movie Management" as MovieService
+            component "Showtime Management" as ShowtimeService
+            component "Ticketing System" as TicketService
+            component "Payment Gateway" as PaymentService
+            component "Review System" as ReviewService
+        }
+
+        package Database {
+            database "User Database" as UserDB
+            database "Movie Database" as MovieDB
+            database "Ticket Database" as TicketDB
+            database "Payment Records" as PaymentDB
+        }
+
+        Web --> UserService
+        Web --> MovieService
+        Web --> ShowtimeService
+        Web --> TicketService
+        Web --> PaymentService
+        Web --> ReviewService
+
+        UserService --> UserDB
+        MovieService --> MovieDB
+        ShowtimeService --> MovieDB
+        TicketService --> TicketDB
+        PaymentService --> PaymentDB
+    }
+    @enduml
+    """
+    with open("swa_diagram.puml", "w") as file:
+        file.write(swa_code)
+    print("SWA Diagram file created: swa_diagram.puml")
+
+# Function to render PlantUML diagrams
+def render_diagram(file_name):
+    """
+    Sends a .puml file to the PlantUML server for rendering and saves the output.
+    Requires an active internet connection to use the online server.
+    """
+    plantuml = PlantUML(PLANTUML_SERVER)
+    plantuml.processes_file(file_name)
+    print(f"Diagram generated: {file_name.replace('.puml', '.png')}")
+
+# Main execution
+if __name__ == "__main__":
+    generate_uml_diagram()
+    generate_swa_diagram()
+
+    # Render both diagrams
+    render_diagram("uml_diagram.puml")
+    render_diagram("swa_diagram.puml")
+
+    print("All diagrams successfully generated. Run with PlantUML for visualization.")
